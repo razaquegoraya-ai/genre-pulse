@@ -1,7 +1,11 @@
-version: '3'
+version: '3.8'
+
 services:
   genre_pulse:
-    build: .
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: genre_pulse_api
     ports:
       - "8000:8000"
     env_file:
@@ -9,3 +13,54 @@ services:
     volumes:
       - ./data:/app/data
       - ./reports:/app/reports
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - genre_pulse_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: genre_pulse_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - genre_pulse_network
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: genre_pulse_prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - genre_pulse_network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: genre_pulse_grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - genre_pulse_network
+
+volumes:
+  redis_data:
+  grafana_data:
+
+networks:
+  genre_pulse_network:
+    driver: bridge
