@@ -1,0 +1,15 @@
+numpy
+pandas
+spotipy
+google-api-python-client
+pylast
+sklearn
+networkx
+tqdm
+fastapi
+uvicorn
+statsforecast
+ydata-profiling
+prefect
+python-dotenv
+requests
