@@ -18,18 +18,18 @@ async def get_report():
     try:
         # Collect data from all sources
         data = collector.collect_all_data()
-        
+
         # Process the data
         analyzer.process_api_data(
             data["spotify"],
             data["youtube"],
             data["lastfm"]
         )
-        
+
         # Analyze trends and generate report
         analyzer.analyze_trends()
         analyzer.save_report()
-        
+
         return {
             "status": "success",
             "message": "✅ Weekly Genre Pulse Report Generated",
@@ -54,18 +54,18 @@ async def analyze_artist(artist_name: str):
     try:
         # Collect data for the specific artist
         data = collector.collect_all_data()
-        
+
         # Process and analyze the data
         analyzer.process_api_data(
             data["spotify"],
             data["youtube"],
             data["lastfm"]
         )
-        
+
         # Generate artist-specific report
         report_path = f"./reports/{artist_name.lower().replace(' ', '_')}_analysis.md"
         analyzer.save_report(filename=report_path)
-        
+
         return {
             "status": "success",
             "message": f"✅ {artist_name} Analysis Report Generated",
